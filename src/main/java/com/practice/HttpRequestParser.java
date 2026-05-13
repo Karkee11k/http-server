@@ -1,24 +1,23 @@
 package com.practice;
 
+import com.practice.exceptions.BadRequestException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.practice.HttpRequest.HttpRequestBuilder;
 
 public class HttpRequestParser {
-    public static HttpRequest parse(InputStream in) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    public static HttpRequest parse(BufferedReader reader) throws BadRequestException, IOException {
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
 
         String requestLine = reader.readLine();
-        if (requestLine == null) throw new IOException("Empty request");
+        if (requestLine == null) throw new BadRequestException("Empty request line"); 
 
         String[] splits = requestLine.split(" ");
-        if (splits.length != 3) throw new IOException("Invalid request line");
+        if (splits.length != 3) throw new BadRequestException("Invalid request line");
 
         String method = splits[0];
         requestBuilder.setMethod(method)
@@ -26,24 +25,29 @@ public class HttpRequestParser {
                 .setVersion(splits[2]);
 
         Map<String, String> headers = readHeaders(reader);
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            requestBuilder.addHeader(entry.getKey(), entry.getValue());
-        }
+        headers.forEach(requestBuilder::addHeader);
 
-        if (hasToReadBody(method) && headers.get("content-length") != null) {
-            int len = Integer.parseInt(headers.get("content-length"));
+        if (headers.get("content-length") != null) {
+            int len;
+            try {
+                len = Integer.parseInt(headers.get("content-length"));
+            } catch (NumberFormatException e) {
+                throw new BadRequestException("Content-Length is not a number");
+            }
             String body = readBody(reader, len);
             requestBuilder.setBody(body);
         }
         return requestBuilder.build();
     }
 
-    private static Map<String, String> readHeaders(BufferedReader reader) throws IOException {
+    private static Map<String, String> readHeaders(BufferedReader reader) throws IOException, BadRequestException {
         Map<String, String> headers = new HashMap<>();
         String line;
         while ((line = reader.readLine()) != null && !line.isEmpty()) {
             int index = line.indexOf(":");
-            if (index == -1) continue;
+            if (index == -1) {
+                throw new BadRequestException("Invalid header line");
+            }
 
             String key = line.substring(0, index).trim().toLowerCase();
             String value = line.substring(index + 1).trim();
@@ -63,10 +67,5 @@ public class HttpRequestParser {
             totalRead += r;
         }
         return new String(chars, 0, totalRead);
-    }
-    
-    private static boolean hasToReadBody(String method) {
-        method = method.toLowerCase();
-        return method.equals("post") || method.equals("put") || method.equals("patch");
     }
 }

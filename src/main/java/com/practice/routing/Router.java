@@ -34,13 +34,13 @@ public class Router {
         var method = request.getMethod();
         var path = request.getPath();
         
-//        for (var route : routes) {
-//            var match = route.matches(method, path);
-//            if (match.matches()) {
-//                match.params().forEach(request::addPathParam);
-//                return route.handler().handle(request);
-//            }
-//        }
+        for (var route : routes) {
+            var match = route.matches(method, path);
+            if (match.matches()) {
+                match.params().forEach(request::addPathParam);
+                return route.handler().handle(request);
+            }
+        }
         
         var response = new HttpResponse();
         response.setStatus(404, "Not Found");

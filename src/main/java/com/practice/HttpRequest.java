@@ -7,6 +7,7 @@ public class HttpRequest {
     private final String path;
     private final String version;
     private final Map<String, String> headers;
+    private final Map<String, String> params;
     private final String body;
     
     private HttpRequest(HttpRequestBuilder builder) {
@@ -15,6 +16,7 @@ public class HttpRequest {
         this.version = builder.version;
         this.headers = Map.copyOf(builder.headers);
         this.body = builder.body;
+        this.params = new HashMap<>();
     }
     
     public String getMethod() {
@@ -31,6 +33,14 @@ public class HttpRequest {
     
     public String getHeader(String header) {
         return this.headers.get(header.toLowerCase());
+    }
+    
+    public void addPathParam(String key, String value) {
+        this.params.put(key, value);
+    }
+    
+    public String getParam(String key) { 
+        return this.params.get(key);
     }
     
     public String getRequestBody() {

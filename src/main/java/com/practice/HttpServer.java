@@ -1,6 +1,8 @@
 package com.practice;
 
 import com.practice.exceptions.BadRequestException;
+import com.practice.routing.Route;
+import com.practice.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +19,40 @@ public class HttpServer {
     public static void main(String[] args) {
         try (var serverSocket = new ServerSocket(8080);
              var executor = Executors.newFixedThreadPool(10)) {
+            var router = new Router();
+            router.get("/hello", request -> {
+                var response = new HttpResponse();
+                response.setStatus(200, "OK");
+                response.setHeader("Content-Type", "text/html");
+                response.setBody("<h1 style=\"color: red\">Hello From Server</h1>");
+                return response;
+            });
+
+            router.get("/users", request -> {
+                var response = new HttpResponse();
+                response.setStatus(200, "OK");
+                response.setHeader("Content-Type", "text/html");
+                response.setBody("<h1 style=\"color: red\">Users: karthi, mani, michael, mano</h1>");
+                return response;
+            });
+
+            router.get("/tasks", request -> {
+                var response = new HttpResponse();
+                response.setStatus(200, "OK");
+                response.setHeader("Content-Type", "text/html");
+                response.setBody("<h1 style=\"color: red\">Tasks: buy amla and almond - go to gym</h1>");
+                return response;
+            });
             while (true) {
                 var clientSocket = serverSocket.accept();
-                executor.execute(() -> handle(clientSocket));
+                executor.execute(() -> handle(clientSocket, router));
             }
         } catch (IOException e) {
             logger.error("Caught exception on server start", e);
         }
     }
     
-    public static void handle(Socket client) {
+    public static void handle(Socket client, Router router) {
         try (client; InputStream in = client.getInputStream(); OutputStream out = client.getOutputStream()) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             try {
@@ -40,7 +66,7 @@ public class HttpServer {
                         break;
                     }
                     
-                    HttpResponse response = handleRequest(request);
+                    HttpResponse response = router.dispatch(request);
                     boolean close = shouldCloseConnection(request);
                     if (close) {
                         response.setHeader("Connection", "close");
@@ -63,21 +89,6 @@ public class HttpServer {
         } catch (IOException e) {
             logger.error("Caught an error at connection handling", e);
         }
-    }
-
-    private static HttpResponse handleRequest(HttpRequest request) {
-        HttpResponse response = new HttpResponse();
-        if (request.getPath().equals("/hello")) {
-            String html = "<h1>Hello from Server</h1>";
-            response.setStatus(200, "OK");
-            response.setHeader("Content-Type", "text/html");
-            response.setBody(html);
-        } else {
-            response.setStatus(404, "Not Found");
-            response.setHeader("Content-Type", "text/plain");
-            response.setBody("Not Found");
-        }
-        return response;
     }
     
     private static void sendBadRequest(OutputStream out) {

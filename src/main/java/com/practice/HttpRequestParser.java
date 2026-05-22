@@ -19,8 +19,7 @@ public class HttpRequestParser {
         String[] splits = requestLine.split(" ");
         if (splits.length != 3) throw new BadRequestException("Invalid request line");
 
-        String method = splits[0];
-        requestBuilder.setMethod(method)
+        requestBuilder.setMethod(splits[0])
                 .setPath(splits[1])
                 .setVersion(splits[2]);
 

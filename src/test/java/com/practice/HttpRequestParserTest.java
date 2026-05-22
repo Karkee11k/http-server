@@ -153,8 +153,8 @@ public class HttpRequestParserTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(new byte[0])));
 
         assertThatThrownBy(() -> HttpRequestParser.parse(reader))
-                .isInstanceOf(IOException.class)
-                .hasMessage("Empty request");
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Empty request line");
     }
 
     @Test
@@ -163,7 +163,7 @@ public class HttpRequestParserTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(raw.getBytes())));
 
         assertThatThrownBy(() -> HttpRequestParser.parse(reader))
-                .isInstanceOf(IOException.class)
+                .isInstanceOf(BadRequestException.class)
                 .hasMessage("Invalid request line");
     }
 

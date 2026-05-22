@@ -32,6 +32,18 @@ public class HttpResponse {
         headers.put(key, value);
     }
     
+    public int getStatusCode() {
+        return this.statusCode;
+    }
+    
+    public String getStatusText() {
+        return this.statusText;
+    }
+    
+    public String getBody() {
+        return this.body;
+    }
+    
     public byte[] toBytes() {
         StringBuilder builder = new StringBuilder();
         builder.append(VERSION).append(" ")

@@ -1,6 +1,7 @@
 package com.practice;
 
 import com.practice.config.ServerConfig;
+import com.practice.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,42 @@ public class HttpServer {
     private static final Logger logger = LoggerFactory.getLogger(HttpServer.class);
     
     public static void main(String[] args) {
-        var config = new ServerConfig(8080);
+        var router = new Router();
+        router.get("/hello", request -> {
+            var response = new HttpResponse();
+            response.setStatus(200, "OK");
+            response.setHeader("Content-Type", "text/html");
+            response.setBody("<h1 style=\"color: red\">Hello From Server</h1>");
+            return response;
+        });
+        
+        router.get("/users", request -> {
+            var response = new HttpResponse();
+            response.setStatus(200, "OK");
+            response.setHeader("Content-Type", "text/html");
+            response.setBody("<h1 style=\"color: red\">Users: karthi, mani, michael, mano</h1>");
+            return response;
+        });
+
+        router.get("/tasks", request -> {
+            var json = """
+                    {
+                        "tasks": [
+                            "buy amla",
+                            "go to gym",
+                            "pay rent",
+                            "wash clothes"
+                        ]
+                    }
+                    """;
+            var response = new HttpResponse();
+            response.setStatus(200, "OK");
+            response.setHeader("Content-Type", "application/json");
+            response.setBody(json);
+            return response;
+        });
+        
+        var config = new ServerConfig(8080, router);
         start(config);
     }
     
@@ -32,7 +68,7 @@ public class HttpServer {
                         var server =  (ServerSocketChannel) selectionKey.channel();
                         var client = server.accept();
                         client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ, ConnectionContext.getInstance());
+                        client.register(selector, SelectionKey.OP_READ, ConnectionContext.getInstance(config.router()));
                     } else if (selectionKey.isReadable()) {
                         var connectionContext = (ConnectionContext) selectionKey.attachment();
                         connectionContext.read(selectionKey);

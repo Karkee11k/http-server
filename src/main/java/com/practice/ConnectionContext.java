@@ -1,5 +1,6 @@
 package com.practice;
 
+import com.practice.routing.Router;
 import com.practice.util.HttpParsingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,12 @@ public class ConnectionContext {
     private static int connectionIdCounter = 0;
     
     private final int connectionId;
+    private final Router router;
     private final ByteBuffer readBuffer;
     private final ByteBuffer writeBuffer;
     
-    private ConnectionContext(int connectionId) {
+    private ConnectionContext(int connectionId, Router router) {
+        this.router = router;
         this.connectionId = connectionId;
         this.readBuffer   = ByteBuffer.allocate(BUFFER_SIZE);
         this.writeBuffer  = ByteBuffer.allocate(BUFFER_SIZE);
@@ -50,7 +53,7 @@ public class ConnectionContext {
                     .setVersion(requestLine[2]);
             headers.forEach(builder::addHeader);
             var request = builder.build();
-            var response = handle(request);
+            var response = this.router.dispatch(request);
             this.writeBuffer.put(response.toBytes());
             this.writeBuffer.flip();
             selectionKey.interestOps(SelectionKey.OP_WRITE);
@@ -86,7 +89,7 @@ public class ConnectionContext {
         return response;
     }
     
-    public static ConnectionContext getInstance() {
-        return new ConnectionContext(++connectionIdCounter);
+    public static ConnectionContext getInstance(Router router) {
+        return new ConnectionContext(++connectionIdCounter, router);
     }
 }

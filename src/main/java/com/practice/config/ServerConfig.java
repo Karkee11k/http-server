@@ -1,3 +1,5 @@
 package com.practice.config;
 
-public record ServerConfig(int port) {}
+import com.practice.routing.Router;
+
+public record ServerConfig(int port, Router router) {}

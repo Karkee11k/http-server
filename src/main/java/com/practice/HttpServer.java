@@ -1,6 +1,7 @@
 package com.practice;
 
 import com.practice.config.ServerConfig;
+import com.practice.http.HttpStatus;
 import com.practice.routing.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ public class HttpServer {
         var router = new Router();
         router.get("/hello", request -> {
             var response = new HttpResponse();
-            response.setStatus(200, "OK");
+            response.setStatus(HttpStatus.OK);
             response.setHeader("Content-Type", "text/html");
             response.setBody("<h1 style=\"color: red\">Hello From Server</h1>");
             return response;
@@ -25,9 +26,9 @@ public class HttpServer {
         
         router.get("/users", request -> {
             var response = new HttpResponse();
-            response.setStatus(200, "OK");
+            response.setStatus(HttpStatus.OK);
             response.setHeader("Content-Type", "text/html");
-            response.setBody("<h1 style=\"color: red\">Users: karthi, mani, michael, mano</h1>");
+            response.setBody("<h1 style=\"color: blue\">Users: karthi, mani, michael, mano</h1>");
             return response;
         });
 
@@ -43,9 +44,18 @@ public class HttpServer {
                     }
                     """;
             var response = new HttpResponse();
-            response.setStatus(200, "OK");
+            response.setStatus(HttpStatus.OK);
             response.setHeader("Content-Type", "application/json");
-            response.setBody(json);
+            response.setBody("{\"request_body\": " +  json + "}");
+            return response;
+        });
+        
+        router.post("/hello", request -> {
+            var response = new HttpResponse();
+            response.setStatus(HttpStatus.OK);
+            response.setHeader("Content-Type", "application/json");
+            var json = request.getBodyAsString();
+            response.setBody("{\"request_body\": " +  json + "}");
             return response;
         });
         
@@ -70,11 +80,11 @@ public class HttpServer {
                         client.configureBlocking(false);
                         client.register(selector, SelectionKey.OP_READ, ConnectionContext.getInstance(config.router()));
                     } else if (selectionKey.isReadable()) {
-                        var connectionContext = (ConnectionContext) selectionKey.attachment();
-                        connectionContext.read(selectionKey);
+                        var ctx = (ConnectionContext) selectionKey.attachment();
+                        ctx.read(selectionKey);
                     } else if (selectionKey.isWritable()) {
-                        var connectionContext = (ConnectionContext) selectionKey.attachment();
-                        connectionContext.write(selectionKey);
+                        var ctx = (ConnectionContext) selectionKey.attachment();
+                        ctx.write(selectionKey);
                     }
                 }
                 selectionKeys.clear();

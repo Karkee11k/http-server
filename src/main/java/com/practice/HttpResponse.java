@@ -1,15 +1,17 @@
 package com.practice;
 
+import com.practice.http.HttpStatus;
+
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class HttpResponse {
+public final class HttpResponse {
     private static final String CRLF = "\r\n";
     private static final String VERSION = "HTTP/1.1";
     
-    private int statusCode;
-    private String statusText;
+    private HttpStatus status;
     private final Map<String, String> headers;
     private String body;
     
@@ -17,9 +19,8 @@ public class HttpResponse {
         this.headers = new LinkedHashMap<>();
     }
     
-    public void setStatus(int code, String text) {
-        this.statusCode = code;
-        this.statusText = Objects.requireNonNull(text, "status text shouldn't be null");
+    public void setStatus(HttpStatus status) {
+        this.status = status;
     }
     
     public void setBody(String body) {
@@ -32,12 +33,21 @@ public class HttpResponse {
         headers.put(key, value);
     }
     
+    public boolean shouldClose() {
+        var connection = this.headers.get("Connection");
+        return connection != null && connection.equalsIgnoreCase("close");
+    }
+    
+    public HttpStatus getStatus() {
+        return status;
+    }
+    
     public int getStatusCode() {
-        return this.statusCode;
+        return this.status.code();
     }
     
     public String getStatusText() {
-        return this.statusText;
+        return this.status.text();
     }
     
     public String getBody() {
@@ -47,8 +57,8 @@ public class HttpResponse {
     public byte[] toBytes() {
         StringBuilder builder = new StringBuilder();
         builder.append(VERSION).append(" ")
-                .append(statusCode).append(" ")
-                .append(statusText).append(CRLF);
+                .append(status.code()).append(" ")
+                .append(status.text()).append(CRLF);
         
         Map<String, String> outHeaders = new LinkedHashMap<>(this.headers);
         if (this.body != null && !body.isEmpty()) {
@@ -65,7 +75,11 @@ public class HttpResponse {
         if (body != null && !body.isEmpty()) {
             builder.append(body);
         }
-        
-        return builder.toString().getBytes();
+        return builder.toString().getBytes(StandardCharsets.UTF_8);
+    }
+    
+    public static HttpResponse from(String raw) {
+        var response = new HttpResponse();
+        return response; 
     }
 }

@@ -4,6 +4,7 @@ import com.practice.exceptions.BadRequestException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class HttpRequestParser {
                 throw new BadRequestException("Content-Length is not a number");
             }
             String body = readBody(reader, len);
-            requestBuilder.setBody(body);
+            requestBuilder.appendBody(body.getBytes(StandardCharsets.UTF_8));
         }
         return requestBuilder.build();
     }

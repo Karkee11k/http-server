@@ -42,7 +42,7 @@ public class HttpRequestParserTest {
 
         assertThat(request.getMethod()).isEqualTo("POST");
         assertThat(request.getPath()).isEqualTo("/users");
-        assertThat(request.getRequestBody()).isEqualTo(body);
+        assertThat(request.getBodyAsString()).isEqualTo(body);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class HttpRequestParserTest {
 
         assertThat(request.getMethod()).isEqualTo("PUT");
         assertThat(request.getPath()).isEqualTo("/users/1");
-        assertThat(request.getRequestBody()).isEqualTo(body);
+        assertThat(request.getBodyAsString()).isEqualTo(body);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class HttpRequestParserTest {
         HttpRequest request = parse(raw);
 
         assertThat(request.getMethod()).isEqualTo("PATCH");
-        assertThat(request.getRequestBody()).isEqualTo(body);
+        assertThat(request.getBodyAsString()).isEqualTo(body);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class HttpRequestParserTest {
 
         HttpRequest request = parse(raw);
 
-        assertThat(request.getRequestBody()).isNull();
+        assertThat(request.getBody()).isNull();
     }
 
     @Test
@@ -101,7 +101,7 @@ public class HttpRequestParserTest {
 
         assertThat(request.getMethod()).isEqualTo("DELETE");
         assertThat(request.getPath()).isEqualTo("/users/1");
-        assertThat(request.getRequestBody()).isNull();
+        assertThat(request.getBody()).isNull();
     }
 
     @Test
@@ -177,7 +177,7 @@ public class HttpRequestParserTest {
         HttpRequest request = parse(raw);
 
         assertThat(request.getMethod()).isEqualTo("POST");
-        assertThat(request.getRequestBody()).isNull();
+        assertThat(request.getBody()).isNull();
     }
 
     @Test

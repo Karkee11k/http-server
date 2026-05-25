@@ -1,5 +1,6 @@
 package com.practice;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class HttpRequest {
@@ -8,7 +9,7 @@ public class HttpRequest {
     private final String version;
     private final Map<String, String> headers;
     private final Map<String, String> params;
-    private final String body;
+    private final byte[] body;
     
     private HttpRequest(HttpRequestBuilder builder) {
         this.method = builder.method;
@@ -43,7 +44,14 @@ public class HttpRequest {
         return this.params.get(key);
     }
     
-    public String getRequestBody() {
+    public String getBodyAsString() {
+        if (body == null) {
+            return "";
+        }
+        return new String(this.body, StandardCharsets.UTF_8);
+    }
+    
+    public byte[] getBody() {
         return this.body;
     }
     
@@ -52,7 +60,8 @@ public class HttpRequest {
         private String path;
         private String version;
         private final Map<String, String> headers = new HashMap<>();
-        private String body;
+        private List<byte[]> bodyChunks;
+        private byte[] body;
         
         public HttpRequestBuilder setMethod(String method) {
             this.method = Objects.requireNonNull(method, "method can't be null");
@@ -68,9 +77,12 @@ public class HttpRequest {
             this.version = Objects.requireNonNull(version, "version shouldn't be null");
             return this;
         }
-
-        public HttpRequestBuilder setBody(String body) {
-            this.body = Objects.requireNonNull(body, "body shouldn't be null");
+        
+        public HttpRequestBuilder appendBody(byte[] chunk) {
+            if (this.bodyChunks == null) {
+                this.bodyChunks = new ArrayList<>();
+            }
+            this.bodyChunks.add(chunk);
             return this;
         }
         
@@ -82,7 +94,22 @@ public class HttpRequest {
         }
         
         public HttpRequest build() {
+            if (bodyChunks != null && !bodyChunks.isEmpty()) {
+                this.body = buildBody(bodyChunks);
+            }
             return new HttpRequest(this);
+        }
+        
+        private byte[] buildBody(List<byte[]> chunks) {
+            int len = bodyChunks.stream().mapToInt(chunk -> chunk.length).sum();
+            byte[] body = new byte[len];
+            int offset = 0;
+
+            for (byte[] chunk : bodyChunks) {
+                System.arraycopy(chunk, 0, body, offset, chunk.length);
+                offset += chunk.length;
+            }
+            return body;
         }
     }
 }

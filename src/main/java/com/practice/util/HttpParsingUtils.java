@@ -1,5 +1,7 @@
 package com.practice.util;
 
+import com.practice.exceptions.BadRequestException;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -19,11 +21,14 @@ public class HttpParsingUtils {
         return requestLine.split("\\s+");
     }
     
-    public static Map<String, String> parseHeaders(ByteBuffer buffer) {
+    public static Map<String, String> parseHeaders(ByteBuffer buffer) throws BadRequestException {
         var headers = new HashMap<String, String>();
         String line;
         while ((line = readLine(buffer)) != null && !line.isEmpty()) {
             int index = line.indexOf(":");
+            if (index == -1) {
+                throw new BadRequestException("Invalid header line");
+            }
             var key = line.substring(0, index).toLowerCase();
             var value = line.substring(index + 1).trim();
             headers.put(key, value);

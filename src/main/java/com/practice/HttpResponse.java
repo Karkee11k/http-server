@@ -62,7 +62,7 @@ public final class HttpResponse {
         
         Map<String, String> outHeaders = new LinkedHashMap<>(this.headers);
         if (this.body != null && !body.isEmpty()) {
-            outHeaders.put("Content-Length", String.valueOf(this.body.getBytes().length));
+            outHeaders.put("Content-Length", String.valueOf(this.body.getBytes(StandardCharsets.UTF_8).length));
         }
         
         for (Map.Entry<String, String> entry : outHeaders.entrySet()) {

@@ -1,5 +1,6 @@
 package com.practice;
 
+import com.practice.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +15,7 @@ public class HttpResponseTest {
                 "\r\n";
 
         HttpResponse response = new HttpResponse();
-        response.setStatus(200, "OK");
+        response.setStatus(HttpStatus.OK);
         response.setHeader("Content-Type", "application/json");
 
         assertThat(response.toBytes()).isEqualTo(raw.getBytes());
@@ -30,7 +31,7 @@ public class HttpResponseTest {
                 body;
 
         HttpResponse response = new HttpResponse();
-        response.setStatus(200, "OK");
+        response.setStatus(HttpStatus.OK);
         response.setBody(body);
 
         assertThat(new String(response.toBytes())).isEqualTo(raw);

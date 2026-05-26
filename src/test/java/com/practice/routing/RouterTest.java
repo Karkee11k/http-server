@@ -2,6 +2,7 @@ package com.practice.routing;
 
 import com.practice.HttpRequest;
 import com.practice.HttpResponse;
+import com.practice.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,7 @@ public class RouterTest {
     void testGetRouteMatchesAndReturnsResponse() {
         router.get("/hello", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("Hello!");
             return res;
         });
@@ -39,7 +40,7 @@ public class RouterTest {
     void testGetRouteDoesNotMatchPost() {
         router.get("/hello", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             return res;
         });
 
@@ -57,7 +58,7 @@ public class RouterTest {
     void testPostRouteMatches() {
         router.post("/users", req -> {
             var res = new HttpResponse();
-            res.setStatus(201, "Created");
+            res.setStatus(HttpStatus.OK);
             res.setBody("User created");
             return res;
         });
@@ -76,7 +77,7 @@ public class RouterTest {
     void testPutRouteMatches() {
         router.put("/users/:id", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("Updated " + req.getParam("id"));
             return res;
         });
@@ -96,7 +97,7 @@ public class RouterTest {
     void testDeleteRouteMatches() {
         router.delete("/users/:id", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("Deleted " + req.getParam("id"));
             return res;
         });
@@ -115,7 +116,7 @@ public class RouterTest {
     void testUnregisteredPathReturns404() {
         router.get("/hello", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             return res;
         });
 
@@ -143,7 +144,7 @@ public class RouterTest {
     void testSinglePathParam() {
         router.get("/users/:id", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("User " + req.getParam("id"));
             return res;
         });
@@ -160,7 +161,7 @@ public class RouterTest {
     void testMultiplePathParams() {
         router.get("/users/:userId/posts/:postId", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody(req.getParam("userId") + "-" + req.getParam("postId"));
             return res;
         });
@@ -179,14 +180,14 @@ public class RouterTest {
     void testFirstMatchingRouteWins() {
         router.get("/hello", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("first");
             return res;
         });
 
         router.get("/hello", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("second");
             return res;
         });
@@ -205,7 +206,7 @@ public class RouterTest {
     void testRootPath() {
         router.get("/", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("root");
             return res;
         });
@@ -224,14 +225,14 @@ public class RouterTest {
     void testDifferentMethodsSamePath() {
         router.get("/resource", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             res.setBody("GET response");
             return res;
         });
 
         router.post("/resource", req -> {
             var res = new HttpResponse();
-            res.setStatus(201, "Created");
+            res.setStatus(HttpStatus.OK);
             res.setBody("POST response");
             return res;
         });
@@ -257,7 +258,7 @@ public class RouterTest {
     void testPathDoesNotMatchExtraSegments() {
         router.get("/users/:id", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             return res;
         });
 
@@ -273,7 +274,7 @@ public class RouterTest {
     void testPathDoesNotMatchFewerSegments() {
         router.get("/users/:id/posts", req -> {
             var res = new HttpResponse();
-            res.setStatus(200, "OK");
+            res.setStatus(HttpStatus.OK);
             return res;
         });
 

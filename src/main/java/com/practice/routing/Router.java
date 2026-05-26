@@ -3,6 +3,7 @@ package com.practice.routing;
 import com.practice.HttpRequest;
 import com.practice.HttpResponse;
 import com.practice.http.HttpMethods;
+import com.practice.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +44,9 @@ public class Router {
         }
         
         var response = new HttpResponse();
-        response.setStatus(404, "Not Found");
+        response.setStatus(HttpStatus.NOT_FOUND);
         response.setHeader("Content-Type", "text/plain");
-        response.setBody("404 Not Found");
+        response.setBody(HttpStatus.NOT_FOUND.text());
         return response;
     }
     
@@ -54,4 +55,3 @@ public class Router {
         HttpResponse handle(HttpRequest request);
     }
 }
-

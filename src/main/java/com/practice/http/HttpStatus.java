@@ -2,10 +2,13 @@ package com.practice.http;
 
 public enum HttpStatus {
     OK(200, "OK"),
-    NOT_FOUND(404, "Not Found"),
+    CREATED(201, "Created"),
+    
     BAD_REQUEST(400, "Bad Request"),
-    INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
-    PAYLOAD_TOO_LARGE(413, "Payload Too Large");
+    NOT_FOUND(404, "Not Found"),
+    PAYLOAD_TOO_LARGE(413, "Payload Too Large"),
+    
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error");
     
     private final int code;
     private final String text;

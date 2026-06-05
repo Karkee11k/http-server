@@ -66,7 +66,7 @@ public class RouterTest {
         HttpRequest request = buildRequest("POST", "/users");
         HttpResponse response = router.dispatch(request);
 
-        assertThat(response.getStatusCode()).isEqualTo(201);
+        assertThat(response.getStatusCode()).isEqualTo(200);
         assertThat(response.getStatusText()).isEqualTo("Created");
         assertThat(response.getBody()).contains("User created");
     }

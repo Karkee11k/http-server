@@ -77,8 +77,10 @@ public class HttpServer {
                     if (selectionKey.isAcceptable()) {
                         var server =  (ServerSocketChannel) selectionKey.channel();
                         var client = server.accept();
-                        client.configureBlocking(false);
-                        client.register(selector, SelectionKey.OP_READ, ConnectionContext.getInstance(config.router()));
+                        if (client != null) {
+                            client.configureBlocking(false);
+                            client.register(selector, SelectionKey.OP_READ, ConnectionContext.getInstance(config.router()));
+                        }
                     } else if (selectionKey.isReadable()) {
                         var ctx = (ConnectionContext) selectionKey.attachment();
                         ctx.read(selectionKey);
@@ -90,7 +92,7 @@ public class HttpServer {
                 selectionKeys.clear();
             }
         } catch (Throwable t) {
-            logger.error("Caught an error", t);
+            logger.error("Fatal error: Server event loop terminated!", t);
         }
     }
 }

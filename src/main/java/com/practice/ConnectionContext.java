@@ -16,6 +16,7 @@ import java.util.Map;
 public class ConnectionContext {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionContext.class);
     private static final int KB = 1024;
+    private static final int MAX_PAYLOAD_SIZE = 8 * KB;
     private static final int BUFFER_SIZE = 16 * KB;
     private static int connectionIdCounter = 0;
     enum State { READING_HEADERS, READING_BODY }
@@ -75,6 +76,7 @@ public class ConnectionContext {
         }
     }
     
+    // Todo: Add check for headers 
     private void handleHeaders(SelectionKey selectionKey) {
         if (!HttpParsingUtils.hasCompleteRequest(readBuffer)) {
             readBuffer.compact();
@@ -94,14 +96,13 @@ public class ConnectionContext {
             sendError(selectionKey, HttpStatus.BAD_REQUEST);
             return;
         }
-        
-        var contentLength = headers.get("content-length");
-        
+
         requestBuilder.setMethod(requestLine[0])
                 .setPath(requestLine[1])
                 .setVersion(requestLine[2]);
         headers.forEach(requestBuilder::addHeader);
-        
+
+        var contentLength = headers.get("content-length");
         if (contentLength == null) {
             finishRequest(selectionKey);
             return;
@@ -111,6 +112,11 @@ public class ConnectionContext {
             expectedBodylength = Integer.parseInt(contentLength);
         } catch (NumberFormatException e) {
             sendError(selectionKey, HttpStatus.BAD_REQUEST);
+            return;
+        }
+        
+        if (expectedBodylength > MAX_PAYLOAD_SIZE) {
+            sendError(selectionKey, HttpStatus.PAYLOAD_TOO_LARGE);
             return;
         }
         

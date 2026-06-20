@@ -49,7 +49,7 @@ public class RouterTest {
 
         assertThat(response.getStatusCode()).isEqualTo(404);
         assertThat(response.getStatusText()).isEqualTo("Not Found");
-        assertThat(response.getBody()).isEqualTo("404 Not Found");
+        assertThat(response.getBody()).isEqualTo("Not Found");
     }
 
     // -- POST routes --
@@ -58,7 +58,7 @@ public class RouterTest {
     void testPostRouteMatches() {
         router.post("/users", req -> {
             var res = new HttpResponse();
-            res.setStatus(HttpStatus.OK);
+            res.setStatus(HttpStatus.CREATED);
             res.setBody("User created");
             return res;
         });
@@ -125,7 +125,7 @@ public class RouterTest {
 
         assertThat(response.getStatusCode()).isEqualTo(404);
         assertThat(response.getStatusText()).isEqualTo("Not Found");
-        assertThat(response.getBody()).isEqualTo("404 Not Found");
+        assertThat(response.getBody()).isEqualTo("Not Found");
     }
 
     @Test
@@ -135,7 +135,7 @@ public class RouterTest {
 
         assertThat(response.getStatusCode()).isEqualTo(404);
         assertThat(response.getStatusText()).isEqualTo("Not Found");
-        assertThat(response.getBody()).isEqualTo("404 Not Found");
+        assertThat(response.getBody()).isEqualTo("Not Found");
     }
 
     // -- Path parameters --
@@ -232,7 +232,7 @@ public class RouterTest {
 
         router.post("/resource", req -> {
             var res = new HttpResponse();
-            res.setStatus(HttpStatus.OK);
+            res.setStatus(HttpStatus.CREATED);
             res.setBody("POST response");
             return res;
         });
@@ -267,7 +267,7 @@ public class RouterTest {
 
         assertThat(response.getStatusCode()).isEqualTo(404);
         assertThat(response.getStatusText()).isEqualTo("Not Found");
-        assertThat(response.getBody()).isEqualTo("404 Not Found");
+        assertThat(response.getBody()).isEqualTo("Not Found");
     }
 
     @Test
@@ -283,7 +283,7 @@ public class RouterTest {
 
         assertThat(response.getStatusCode()).isEqualTo(404);
         assertThat(response.getStatusText()).isEqualTo("Not Found");
-        assertThat(response.getBody()).isEqualTo("404 Not Found");
+        assertThat(response.getBody()).isEqualTo("Not Found");
     }
 
     // -- Helpers --

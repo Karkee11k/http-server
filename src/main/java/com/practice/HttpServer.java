@@ -19,8 +19,8 @@ public class HttpServer {
         router.get("/hello", request -> {
             var response = new HttpResponse();
             response.setStatus(HttpStatus.OK);
-            response.setHeader("Content-Type", "text/html");
-            response.setBody("<h1 style=\"color: red\">Hello From Server</h1>");
+            response.setHeader("Content-Type", "text/plain");
+            response.setBody("Hello, World!");
             return response;
         });
         

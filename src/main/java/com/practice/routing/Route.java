@@ -29,7 +29,7 @@ public class Route {
                 paramNames.add(split.substring(1));
                 builder.append("/([^/]+)");
             } else {
-                builder.append("/").append(split);
+                builder.append("/").append(Pattern.quote(split));
             }
         }
         

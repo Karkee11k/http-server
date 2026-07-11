@@ -20,7 +20,7 @@ public class ConnectionContext {
     private static int connectionIdCounter = 0;
     enum State { READING_HEADERS, READING_BODY }
     
-    private State currentState = State.READING_HEADERS;
+    private State currentState;
     private final int connectionId;
     private final Router router;
     private final ByteBuffer readBuffer;
@@ -35,6 +35,7 @@ public class ConnectionContext {
         this.connectionId = connectionId;
         this.readBuffer   = ByteBuffer.allocate(BUFFER_SIZE);
         this.requestBuilder = new HttpRequest.HttpRequestBuilder();
+        this.currentState = State.READING_HEADERS;
     }
     
     public void read(SelectionKey selectionKey) throws IOException {
